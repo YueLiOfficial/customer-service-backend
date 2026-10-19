@@ -1,8 +1,9 @@
 from dataclasses import asdict, dataclass, field
 import time
+import uuid
 
 from app.domain.contexts import SystemContext, TaskContext
-from app.domain.messages import MessageObject, UserMessage, BotMessage
+from app.domain.messages import MessageObject, UserMessage, BotMessage, ProcessMessage
 
 @dataclass(slots=True)
 class Turn:
@@ -80,6 +81,51 @@ class DialogueState:
     current_session_id: str | None = None
     focused_object: FocusedObject | None = None
     pending_turn: Turn | None = None
+
+    def get_current_session(self) -> Session | None:
+        for session in self.sessions:
+            if session.session_id == self.current_session_id:
+                return session
+        return None
+
+    def create_session(self) -> None:
+        session = Session(
+            session_id=str(uuid.uuid4()),
+            started_at=time.time(),
+            last_activity_at=time.time()
+        )
+
+        self.sessions.append(session)
+        self.current_session_id = session.session_id
+
+    def close_session(self, session: Session) -> None:
+        session.closed_at = time.time()
+        self.current_session_id = None
+
+    def clear_state(self) -> None:
+        self.active_task = None
+        self.paused_tasks = []
+        self.active_system_task = None
+        self.focused_object = None
+
+    def update_last_active_time(self, session: Session) -> None:
+        session.last_activity_at = time.time()
+
+    def create_turn(self, message: UserMessage) -> None:
+        turn = Turn(
+            turn_id=str(uuid.uuid4()),
+            input_message=message
+        )
+        self.pending_turn = turn
+
+    def fill_turn(self, messages: list[BotMessage]) -> None:
+        assert self.pending_turn
+        self.pending_turn.assistant_message = messages
+
+    def commit_turn(self, session: Session) -> None:
+        assert self.pending_turn
+        session.turns.append(self.pending_turn)
+        self.pending_turn = None
 
     def to_dict(self) -> dict:
         return {
