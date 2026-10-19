@@ -31,7 +31,7 @@ async def chat_history(sender_id: str):
 async def chat(request: ChatRequest, service: DialogueService = Depends(get_dialogue_service)):
     user_message = _build_user_message(request)
     
-    process_message: ProcessMessage = service.process_message(user_message)
+    process_message: ProcessMessage = await service.process_message(user_message)
 
     return _build_chat_response(process_message)
 

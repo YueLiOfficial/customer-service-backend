@@ -32,7 +32,7 @@ class UserMessage:
             "sender_id": self.sender_id,
             "type": MessageType(self.type),
             "text": self.text,
-            "object": self.object,
+            "object": self.object.to_dict() if self.object else None,
             "message_id": self.message_id
         }
     
@@ -40,7 +40,7 @@ class UserMessage:
     def from_dict(cls, data_dict: dict) -> "UserMessage":
         return cls(
             sender_id=data_dict["sender_id"],
-            type=data_dict["type"],
+            type=MessageType(data_dict["type"]),
             text=data_dict.get("text"),
             message_id=data_dict.get("message_id"),
             object = MessageObject.from_dict(data_dict.get("object")) if data_dict.get("object") else None
@@ -56,6 +56,13 @@ class BotMessage:
             "text": self.text,
             "object": self.object.to_dict() if self.object else None
         }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "BotMessage":
+        return cls(
+            text=data.get("text"),
+            object=MessageObject.from_dict(data["object"]) if data.get("object") else None
+        )
 
 @dataclass(slots=True)
 class ProcessMessage:
