@@ -82,6 +82,8 @@ class InterruptedSystemContext(SystemContext):
     interrupted_flow_name: str
     started_flow_id: str | None = None
     started_step_name: str | None = None
+    resumed_flow_id: str | None = None
+    resumed_step_name: str | None = None
 
     def to_dict(self) -> dict:
         return asdict(self)

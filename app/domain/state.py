@@ -1,5 +1,6 @@
 from dataclasses import asdict, dataclass, field
 import time
+from typing import Any
 import uuid
 
 from app.domain.contexts import SystemContext, TaskContext
@@ -126,6 +127,35 @@ class DialogueState:
         assert self.pending_turn
         session.turns.append(self.pending_turn)
         self.pending_turn = None
+
+    def stop_sys_task(self):
+        self.active_system_task = None
+
+    def start_sys_task(self, context: SystemContext):
+        self.active_system_task = context
+
+    def interrupt_current_task(self):
+        assert self.active_task
+        self.paused_tasks.append(self.active_task)
+        self.active_task = None
+
+    def start_task(self, task_context: TaskContext):
+        self.active_task = task_context
+
+    def stop_cur_task(self):
+        self.active_task = None
+        self.active_system_task = None
+
+    def set_slots(self, slots: dict[str, Any]):
+        if self.active_task:
+            self.active_task.slots.update(slots)
+
+    def resume_task(self, task_id: str):
+        for task in self.paused_tasks:
+            if task.flow_id == task_id:
+                self.active_task = task
+                self.paused_tasks.remove(task)
+                break
 
     def to_dict(self) -> dict:
         return {
