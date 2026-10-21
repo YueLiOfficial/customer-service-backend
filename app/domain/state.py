@@ -144,7 +144,6 @@ class DialogueState:
 
     def stop_cur_task(self):
         self.active_task = None
-        self.active_system_task = None
 
     def set_slots(self, slots: dict[str, Any]):
         if self.active_task:
@@ -156,6 +155,13 @@ class DialogueState:
                 self.active_task = task
                 self.paused_tasks.remove(task)
                 break
+
+    def get_cur_task(self) -> TaskContext | SystemContext | None:
+        return self.active_system_task or self.active_task
+
+    def remove_slot(self, slot_name: str):
+        assert self.active_task is not None
+        self.active_task.slots.pop(slot_name)
 
     def to_dict(self) -> dict:
         return {

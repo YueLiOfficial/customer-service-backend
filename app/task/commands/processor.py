@@ -69,6 +69,7 @@ class CommandProcessor:
         cur_task = state.active_task
         # 取消当前的任务
         state.stop_cur_task()
+        state.stop_sys_task()
         # 启动canceled系统任务
         assert cur_task
         state.start_sys_task(

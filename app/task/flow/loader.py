@@ -3,7 +3,7 @@ from pathlib import Path
 import yaml
 
 from app.task.flow.models import Flow, FlowList, FlowSlot
-from app.task.flow.steps import CollectFLowStep
+from app.task.flow.steps import CollectFlowStep
 
 
 class FlowLoader:
@@ -49,8 +49,8 @@ class FlowLoader:
             flow_val["id"] = flow_name
             flow = Flow.from_dict(flow_val)
 
-            # 从slots中取出当前flow中为CollectFLowStep类型的step所对应的槽信息
-            flow.slots = [slots.get(step.slot_name) for step in flow.steps if isinstance(step, CollectFLowStep)] # type: ignore
+            # 从slots中取出当前flow中为CollectFlowStep类型的step所对应的槽信息
+            flow.slots = [slots.get(step.slot_name) for step in flow.steps if isinstance(step, CollectFlowStep)] # type: ignore
             flows.append(flow)
 
         return flows

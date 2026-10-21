@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from enum import Enum
 from typing import Any
 
@@ -15,6 +15,9 @@ class ResponseDef:
     mode: str = "static"
     text: str | None = None
     prompt: str | None = None
+
+    def to_dict(self):
+        return asdict(self)
 
     @classmethod
     def from_dict(cls, data) -> "ResponseDef":
@@ -47,9 +50,9 @@ class FlowStep:
         elif type == "action":
             return ActionFlowStep.from_dict(data)
         elif type == "collect":
-            return CollectFLowStep.from_dict(data)
+            return CollectFlowStep.from_dict(data)
         else:
-            return EndFLowStep.from_dict(data)
+            return EndFlowStep.from_dict(data)
 
 
 @dataclass(slots=True)
@@ -66,7 +69,7 @@ class StartFlowStep(FlowStep):
 @dataclass(slots=True)
 class ActionFlowStep(FlowStep):
     action: str = ""
-    args: dict[str, Any] | None = field(default_factory=dict)
+    args: dict[str, Any] | str = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, data) -> FlowStep:
@@ -80,7 +83,7 @@ class ActionFlowStep(FlowStep):
         )
 
 @dataclass(slots=True)
-class CollectFLowStep(FlowStep):
+class CollectFlowStep(FlowStep):
     slot_name: str = ""
     response: ResponseDef = field(default_factory=ResponseDef)
     validation: SlotValidation | None = None
@@ -98,7 +101,7 @@ class CollectFLowStep(FlowStep):
         )
 
 @dataclass(slots=True)
-class EndFLowStep(FlowStep):
+class EndFlowStep(FlowStep):
     @classmethod
     def from_dict(cls, data) -> FlowStep:
         return cls(

@@ -32,6 +32,12 @@ class Flow:
                 return step
         return None # type: ignore
 
+    def get_step_by_id(self, step_id: str) -> FlowStep:
+        for step in self.steps:
+            if step.id == step_id:
+                return step
+        return None # type: ignore
+
 @dataclass(slots=True)
 class FlowList:
     slots: dict[str, FlowSlot] = field(default_factory=dict)
