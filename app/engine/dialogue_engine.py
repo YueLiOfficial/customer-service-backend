@@ -2,10 +2,20 @@ import time
 
 from app.domain.messages import UserMessage, ProcessMessage
 from app.domain.state import DialogueState, BotMessage
+from app.plan.models import TaskTurnPlan, TurnPlan
+from app.task.commands.models import StartFlowCommand, SetSlotsCommand
+from app.task.handler import TaskHandler
+from app.task.commands.processor import CommandProcessor
 
 
 class DialogueEngine:
-    def process(self, state: DialogueState, message: UserMessage) -> ProcessMessage:
+    def __init__(
+        self,
+        handler: TaskHandler
+    ):
+        self.handler = handler
+
+    async def process(self, state: DialogueState, message: UserMessage) -> ProcessMessage:
         # 1. 准备会话
         self._prepare_session(state)
         # 2. 创建turn
@@ -13,9 +23,9 @@ class DialogueEngine:
         # 3. 处理消息
         bot_messages: list[BotMessage] = []
         if message.type == "text":
-            bot_messages = self._text_msg_handler(message)
+            bot_messages = await self._text_msg_handler(state, message)
         else:
-            bot_messages = self._obj_msg_handler(message)
+            bot_messages = await self._obj_msg_handler(message)
         # 4. 填充turn
         self._pedding_turn(state, bot_messages)
         # 5. 提交turn
@@ -51,11 +61,35 @@ class DialogueEngine:
     def _create_turn(self, state: DialogueState, message: UserMessage) -> None:
         state.create_turn(message)
 
-    def _text_msg_handler(self, message: UserMessage) -> list[BotMessage]:
+    async def _text_msg_handler(self, state: DialogueState, message: UserMessage) -> list[BotMessage]:
+        # TODO: 调用意图识别组件进行意图识别
+        planner = TurnPlan(
+            task = TaskTurnPlan(
+                commands=[
+                    StartFlowCommand(
+                        command="start_flow",
+                        flow="logistics_tracking"
+                    )
+                ]
+                # commands=[
+                #     SetSlotsCommand(
+                #         command="set_slots",
+                #         solts={
+                #             "order_number": "A20260410001"
+                #         }
+                #     )
+                # ]
+            ),
+            knowledge=None,
+            chitchat=None
+        )
+        # 调用task_handler进行任务处理
+        assert planner.task is not None
+        bot_messages = await self.handler.run(state, planner.task.commands)
 
-        return [BotMessage(text="处理text消息的流程")]
+        return bot_messages
 
-    def _obj_msg_handler(self, message: UserMessage) -> list[BotMessage]:
+    async def _obj_msg_handler(self, message: UserMessage) -> list[BotMessage]:
         
         return [BotMessage(text="处理object消息的流程")]
 

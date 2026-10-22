@@ -12,7 +12,7 @@ class DialogueService:
         # 获取历史状态
         state = await self._repo.load(message.sender_id)
         # 调用Engine层处理消息
-        precess_msg = self._engine.process(state=state, message=message)
+        precess_msg = await self._engine.process(state=state, message=message)
         # 更新历史状态
         await self._repo.save(state)
 

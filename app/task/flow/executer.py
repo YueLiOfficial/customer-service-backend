@@ -36,6 +36,8 @@ class FlowExecuter:
             if not cur_task:
                 return ActionCall(action_name="action_listen")
 
+            print(f"{cur_task.flow_id}----------------{cur_task.step_id}")
+
             # 当前state中有任务，推进任务
             # 获取当前任务的流程
             flow: Flow = flows.get_flow_by_id(cur_task.flow_id)
@@ -46,6 +48,7 @@ class FlowExecuter:
                 self._run_start_step(state, step)
             elif isinstance(step, ActionFlowStep):
                 call = self._run_action_step(state, step)
+                return call
             elif isinstance(step, CollectFlowStep):
                 call = self._run_collect_step(state, step, flows)
                 if call:

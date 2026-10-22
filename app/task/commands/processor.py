@@ -43,7 +43,7 @@ class CommandProcessor:
                     interrupted_flow_id=cur_task.flow_id,
                     interrupted_flow_name=flows.get_flow_by_id(cur_task.flow_id).name,
                     started_flow_id=target_task_id,
-                    started_step_name=target_flow.name
+                    started_flow_name=target_flow.name
                 )
             )
         else:
@@ -59,8 +59,8 @@ class CommandProcessor:
                 StartedSystemContext(
                     flow_id="system_task_started",
                     step_id=flows.get_flow_by_id("system_task_started").get_start_step().id,
-                    start_flow_id=target_task_id,
-                    start_flow_name=target_flow.name
+                    started_flow_id=target_task_id,
+                    started_flow_name=target_flow.name
                 )
             )
 
@@ -102,7 +102,7 @@ class CommandProcessor:
                     interrupted_flow_id=cur_task.flow_id,
                     interrupted_flow_name=flows.get_flow_by_id(cur_task.flow_id).name,
                     resumed_flow_id=target_task_id,
-                    resumed_step_name=target_flow.name
+                    resumed_flow_name=target_flow.name
                 )
             )
         else:

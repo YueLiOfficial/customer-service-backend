@@ -111,9 +111,9 @@ class EndFlowStep(FlowStep):
             description=data.get("description", "")
         )
 
-def build_next(data: dict | str) -> list[FLowLink]:
+def build_next(data: list | str) -> list[FLowLink]:
     flowlink = []
-    if isinstance(data, dict):
+    if isinstance(data, list):
         for link in data:
             if link.get("if"):
                 flowlink.append(ConditionalFlowLink(
