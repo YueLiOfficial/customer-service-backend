@@ -37,7 +37,7 @@ class TurnPlan:
         return cls(
             task = TaskTurnPlan.from_dict(data["task"]) if data.get("task") else None,
             knowledge = KnowledgeTurnPlan.from_dict(data["knowledge"]) if data.get("knowledge") else None,
-            chitchat = ChitchatTurnPlan() if data.get("chitchat") else None
+            chitchat = ChitchatTurnPlan() if data.get("chitchat") is not None else None
         )
 
 if __name__ == '__main__':

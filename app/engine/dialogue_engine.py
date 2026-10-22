@@ -5,6 +5,7 @@ from app.domain.messages import UserMessage, ProcessMessage
 from app.domain.state import DialogueState, BotMessage
 from app.knowledge.handler import KnowledgeHandler
 from app.plan.models import KnowledgeTurnPlan, TaskTurnPlan, TurnPlan
+from app.plan.planner import TurnPlanner
 from app.task.commands.models import StartFlowCommand, SetSlotsCommand
 from app.task.handler import TaskHandler
 from app.task.commands.processor import CommandProcessor
@@ -15,11 +16,13 @@ class DialogueEngine:
         self,
         task_handler: TaskHandler,
         knowledge_handler: KnowledgeHandler,
-        chitchat_handler: ChitchatHandler
+        chitchat_handler: ChitchatHandler,
+        planner: TurnPlanner
     ):
         self.task_handler = task_handler
         self.knowledge_handler = knowledge_handler
         self.chitchat_handler = chitchat_handler
+        self.planner = planner
 
     async def process(self, state: DialogueState, message: UserMessage) -> ProcessMessage:
         # 1. 准备会话
@@ -69,50 +72,14 @@ class DialogueEngine:
 
     async def _text_msg_handler(self, state: DialogueState, message: UserMessage) -> list[BotMessage]:
         # TODO: 调用意图识别组件进行意图识别
-        # planner = TurnPlan(
-        #     task = TaskTurnPlan(
-        #         commands=[
-        #             StartFlowCommand(
-        #                 command="start_flow",
-        #                 flow="logistics_tracking"
-        #             )
-        #         ]
-        #         # commands=[
-        #         #     SetSlotsCommand(
-        #         #         command="set_slots",
-        #         #         solts={
-        #         #             "order_number": "A20260410001"
-        #         #         }
-        #         #     )
-        #         # ]
-        #     ),
-        #     knowledge=None,
-        #     chitchat=None
-        # )
-        # 调用task_handler进行任务处理
-        # assert planner.task is not None
-        # bot_messages = await self.task_handler.run(state, planner.task.commands)
-
-        # 调用knowledge_handler处理knowledge任务
-        # planner = TurnPlan(
-        #     task = None,
-        #     knowledge=KnowledgeTurnPlan(["order_info"]),
-        #     chitchat=None
-        # )
-        # from app.domain.state import FocusedObject
-        # state.focused_object = FocusedObject(
-        #     type="order",
-        #     id="A20260408002",
-        #     title=''
-        # )
-
-        # assert planner.knowledge is not None
-        # bot_messages = await self.knowledge_handler.run(state, planner.knowledge.intents)
+        turn_plan = await self.planner.predict(state, self.task_handler._flows, self.knowledge_handler.knowledge_intents)
+        print(turn_plan)
 
         # 调用chitchat_handler
-        bot_messages = await self.chitchat_handler.run(state)
+        # bot_messages = await self.chitchat_handler.run(state)
 
-        return bot_messages
+        # return bot_messages
+        return [BotMessage(text="测试turnplan")]
 
     async def _obj_msg_handler(self, message: UserMessage) -> list[BotMessage]:
         
