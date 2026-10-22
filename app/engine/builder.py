@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from app.chitchat.handler import ChitchatHandler
+from app.chitchat.responder import ChitchatResponder
 from app.engine.dialogue_engine import DialogueEngine
 from app.knowledge.handler import KnowledgeHandler
 from app.knowledge.responder import KnowledgeResponder
@@ -31,5 +33,8 @@ def build_engine():
             knowledge_intents=KNOWLEDGE_INTENTS,
             registry=build_provider_registry(),
             responder=KnowledgeResponder()
+        ),
+        chitchat_handler=ChitchatHandler(
+            responder=ChitchatResponder()
         )
     )

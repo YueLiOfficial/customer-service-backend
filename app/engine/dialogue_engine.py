@@ -1,5 +1,6 @@
 import time
 
+from app.chitchat.handler import ChitchatHandler
 from app.domain.messages import UserMessage, ProcessMessage
 from app.domain.state import DialogueState, BotMessage
 from app.knowledge.handler import KnowledgeHandler
@@ -13,10 +14,12 @@ class DialogueEngine:
     def __init__(
         self,
         task_handler: TaskHandler,
-        knowledge_handler: KnowledgeHandler
+        knowledge_handler: KnowledgeHandler,
+        chitchat_handler: ChitchatHandler
     ):
         self.task_handler = task_handler
         self.knowledge_handler = knowledge_handler
+        self.chitchat_handler = chitchat_handler
 
     async def process(self, state: DialogueState, message: UserMessage) -> ProcessMessage:
         # 1. 准备会话
@@ -91,20 +94,23 @@ class DialogueEngine:
         # bot_messages = await self.task_handler.run(state, planner.task.commands)
 
         # 调用knowledge_handler处理knowledge任务
-        planner = TurnPlan(
-            task = None,
-            knowledge=KnowledgeTurnPlan(["order_info"]),
-            chitchat=None
-        )
-        from app.domain.state import FocusedObject
-        state.focused_object = FocusedObject(
-            type="order",
-            id="A20260408002",
-            title=''
-        )
+        # planner = TurnPlan(
+        #     task = None,
+        #     knowledge=KnowledgeTurnPlan(["order_info"]),
+        #     chitchat=None
+        # )
+        # from app.domain.state import FocusedObject
+        # state.focused_object = FocusedObject(
+        #     type="order",
+        #     id="A20260408002",
+        #     title=''
+        # )
 
-        assert planner.knowledge is not None
-        bot_messages = await self.knowledge_handler.run(state, planner.knowledge.intents)
+        # assert planner.knowledge is not None
+        # bot_messages = await self.knowledge_handler.run(state, planner.knowledge.intents)
+
+        # 调用chitchat_handler
+        bot_messages = await self.chitchat_handler.run(state)
 
         return bot_messages
 
