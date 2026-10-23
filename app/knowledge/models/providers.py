@@ -33,7 +33,7 @@ class ProductProvider(KnowledgeProvider):
             else:
                 return [KnowledgeChunk(content="无法获取商品信息!")]
         else:
-            return [KnowledgeChunk(content="请输入商品id")]
+            return [KnowledgeChunk(content="无法获取商品信息!")]
 
 class OrderProvider(KnowledgeProvider):
     provider_id = "api.order"
@@ -55,7 +55,7 @@ class OrderProvider(KnowledgeProvider):
                 KnowledgeChunk(content=f"订单物流: {logistics}")
             ]
         else:
-            return [KnowledgeChunk(content="请输入订单id")]
+            return [KnowledgeChunk(content="无法获取订单信息!")]
     
     async def get_api_response(self, order_id: str, url: str) -> str:
         assert http_util.http_client is not None
