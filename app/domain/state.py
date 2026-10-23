@@ -174,6 +174,9 @@ class DialogueState:
             "focused_object": self.focused_object.to_dict() if self.focused_object else None
         }
 
+    def set_focused_object(self, object: FocusedObject):
+        self.focused_object = object
+
     @classmethod
     def from_dict(cls, data: dict) -> "DialogueState":
         paused_task_list = data.get("paused_tasks")
@@ -190,3 +193,4 @@ class DialogueState:
             current_session_id=data.get("current_session_id"),
             focused_object=FocusedObject.from_dict(data["focused_object"]) if data.get("focused_object") else None
         )
+    

@@ -25,8 +25,6 @@ class ProductProvider(KnowledgeProvider):
         if state.focused_object:
             product_id = state.focused_object.id
 
-            print(product_id)
-
             assert http_util.http_client is not None
             response = await http_util.http_client.get(f"{settings.commerce_api_base_url}/products/{product_id}")
             if response and response.json().get("code") == 0:

@@ -5,7 +5,7 @@ from app.task.flow.models import Flow, FlowList
 from app.task.flow.steps import ActionFlowStep, CollectFlowStep, EndFlowStep, FlowStep, StartFlowStep
 from app.task.runner.runner import ActionCall, ActionRunner
 from app.task.runner.models.base import ActionResult
-from app.domain.contexts import CollectSystemContext
+from app.domain.contexts import CollectSystemContext, ResumedSystemContext
 
 
 class FlowExecuter:

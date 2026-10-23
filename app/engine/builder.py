@@ -2,10 +2,12 @@ from pathlib import Path
 
 from app.chitchat.handler import ChitchatHandler
 from app.chitchat.responder import ChitchatResponder
+from app.clarify.clarify import ClarifyResponder
 from app.engine.dialogue_engine import DialogueEngine
 from app.knowledge.handler import KnowledgeHandler
 from app.knowledge.responder import KnowledgeResponder
 from app.plan.planner import TurnPlanner
+from app.plan.validator import TurnPlanValidator
 from app.task.commands.processor import CommandProcessor
 from app.task.flow.executer import FlowExecuter
 from app.task.flow.loader import FlowLoader
@@ -38,5 +40,7 @@ def build_engine():
         chitchat_handler=ChitchatHandler(
             responder=ChitchatResponder()
         ),
-        planner=TurnPlanner()
+        planner=TurnPlanner(),
+        validator=TurnPlanValidator(),
+        clarify=ClarifyResponder()
     )

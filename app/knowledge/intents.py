@@ -16,7 +16,7 @@ KNOWLEDGE_INTENTS = {
     ),
     "order_info": KnowledgeIntent(
         id_="order_info",
-        description="订单信息查询",
+        description="订单详情查询",
         provider_ids=["api.order"],
         requires_object="order"
     ),

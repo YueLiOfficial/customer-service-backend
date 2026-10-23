@@ -19,7 +19,7 @@ class TurnPlanner:
     async def predict(self, state: DialogueState, flow_list: FlowList, intents: dict[str, KnowledgeIntent]) -> TurnPlan:
         prompt = load_prompt("turn_plan")
 
-        flows = [{k:v for k, v in asdict(flow).items() if k != "step"} for flow in flow_list.flows]
+        flows = [{k:v for k, v in asdict(flow).items() if k != "steps"} for flow in flow_list.flows]
         intent_list = [{"id": intent.id_, "description": intent.description} for intent in intents.values()]
 
         assert state.pending_turn is not None

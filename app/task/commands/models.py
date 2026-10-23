@@ -36,7 +36,7 @@ class ResumeFlowCommand(Command):
 
 @dataclass(slots=True)
 class SetSlotsCommand(Command):
-    solts: dict[str, Any]
+    slots: dict[str, Any]
 
     @classmethod
     def from_dict(cls, data: dict) -> "SetSlotsCommand":

@@ -111,13 +111,13 @@ class CommandProcessor:
             # 启动resumed系统任务
             state.start_sys_task(
                 ResumedSystemContext(
-                    flow_id="system_task_interrupted",
-                    step_id=flows.get_flow_by_id("system_task_interrupted").get_start_step().id,
+                    flow_id="system_task_resumed",
+                    step_id=flows.get_flow_by_id("system_task_resumed").get_start_step().id,
                     resumed_flow_id=target_task_id,
                     resumed_flow_name=target_flow.name
                 )
             )
 
     def _setslots_cmd_handle(self, command: SetSlotsCommand, state: DialogueState) -> None:
-        if command.solts:
-            state.set_slots(command.solts)
+        if command.slots:
+            state.set_slots(command.slots)

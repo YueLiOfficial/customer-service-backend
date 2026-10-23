@@ -24,14 +24,18 @@ class KnowledgeHandler:
             knowledge_intent = self.knowledge_intents.get(intent)
             if knowledge_intent:
                 provider_ids.extend(knowledge_intent.provider_ids)
-
+        print("+"*50)
+        print(provider_ids)
         chunks = []
         # 根据provier_ids 获取对应的provider实例
         for id_ in provider_ids:
             provider = self.registry.get(id_)
+            print(provider)
             # 执行provider，获取结果
             cur_chunks = await provider.retrieve(state)
+            print(cur_chunks)
             chunks.extend(cur_chunks)
+
 
         assert state.pending_turn is not None
         bot_message = await self.responder.run(
