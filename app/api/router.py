@@ -2,29 +2,43 @@ import uuid
 
 from fastapi import APIRouter, Depends
 
-from app.api.deps import get_dialogue_service
+from app.api.deps import get_dialogue_service, get_history_service
 from app.api.schemas import BotMessageResponse, ChatHistoryResponse, ChatObjectPyload, ChatRequest, ChatResponse, HistoryMessageResponse
 from app.domain.messages import MessageObject, MessageType, ProcessMessage, UserMessage
 from app.service.dialogue_service import DialogueService
+from app.service.history_service import HistoryService
 
 router = APIRouter()
 
 @router.get("/api/chat/history", response_model=ChatHistoryResponse)
-async def chat_history(sender_id: str):
-    # TODO: 调用service层获取聊天记录
+async def chat_history(sender_id: str, service: HistoryService = Depends(get_history_service)):
+    turns = await service.build_history_turns(sender_id)
+
+    messages: list[HistoryMessageResponse] = []
+
+    for turn in turns:
+        usermessage = turn.input_message
+        messages.append(
+            HistoryMessageResponse(
+                role="user",
+                text=usermessage.text,
+                object=ChatObjectPyload(**usermessage.object.to_dict()) if usermessage.object else None
+            )
+        )
+
+        bot_messages = turn.assistant_message
+        for bot_msg in bot_messages:
+            messages.append(
+                HistoryMessageResponse(
+                    role="bot",
+                    text=bot_msg.text,
+                    object=ChatObjectPyload(**bot_msg.object.to_dict()) if bot_msg.object else None
+                )
+            )
 
     return ChatHistoryResponse(
         sender_id=sender_id,
-        messages=[
-            HistoryMessageResponse(
-                role="user",
-                text="你好",
-            ),
-            HistoryMessageResponse(
-                role="bot",
-                text="你好, 需要什么帮助"
-            )
-        ]
+        messages=messages
     )
 
 @router.post("/api/chat", response_model=ChatResponse)

@@ -6,6 +6,7 @@ from app.engine.dialogue_engine import DialogueEngine
 from app.repository.dialogue_state_repo import DialogueStateRepo
 from app.service.dialogue_service import DialogueService
 from app.infra import database
+from app.service.history_service import HistoryService
 
 async def get_session():
     async with database.session_factory() as session: # type: ignore
@@ -22,3 +23,6 @@ def get_dialogue_service(
     engine: DialogueEngine = Depends(get_dialogue_engine)
 ):
     return DialogueService(repo, engine)
+
+def get_history_service(repo: DialogueStateRepo = Depends(get_dialogue_state_repo)):
+    return HistoryService(repo)
